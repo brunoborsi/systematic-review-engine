@@ -26,17 +26,15 @@ MEASURE_LABELS = {
     Measure.odds_ratio: "odds ratio",
     Measure.smd: "SMD",
 }
-# Mappa tollerante per gli esiti secondari scritti a mano: accetta sia le
-# etichette italiane (come si vedono nel menu) sia i codici interni inglesi.
-MEASURE_FROM_TEXT = {lbl.lower(): m for m, lbl in MEASURE_LABELS.items()}
-MEASURE_FROM_TEXT.update({m.value: m for m in Measure})
-
-
-def parse_measure(raw: str) -> Measure:
-    return MEASURE_FROM_TEXT.get((raw or "").strip().lower(), Measure.mean_difference)
-
 d = st.session_state.setdefault("draft", {})
 st.session_state.setdefault("step", 0)
+
+
+def _new_outcome_row(name="", unit="", measure=Measure.mean_difference):
+    """Riga di esito secondario con id stabile (per add/remove sicuri)."""
+    rid = d.get("_sec_counter", 0)
+    d["_sec_counter"] = rid + 1
+    return {"id": rid, "name": name, "unit": unit, "measure": measure}
 
 
 def progress_bar():
@@ -80,10 +78,23 @@ if step == 0:
     d["o_measure"] = c3.selectbox("Misura", list(Measure),
                                   format_func=lambda m: MEASURE_LABELS[m],
                                   index=list(Measure).index(d.get("o_measure", Measure.mean_difference)))
-    d["secondary"] = st.text_area(
-        "Esiti secondari (uno per riga: nome | unita' | misura)",
-        d.get("secondary", "Durata blocco sensitivo | minuti | differenza media"))
-    st.caption("Misura: scrivi pure in italiano (differenza media, rischio relativo, odds ratio, SMD).")
+    st.markdown("**Esiti secondari**")
+    if "secondary_list" not in d:
+        d["secondary_list"] = [_new_outcome_row("Durata blocco sensitivo", "minuti")]
+    for item in list(d["secondary_list"]):
+        with st.container(border=True):
+            item["name"] = st.text_input("Nome esito", item["name"], key=f"sn{item['id']}")
+            sc1, sc2 = st.columns(2)
+            item["unit"] = sc1.text_input("Unita'", item["unit"], key=f"su{item['id']}")
+            item["measure"] = sc2.selectbox(
+                "Misura", list(Measure), format_func=lambda m: MEASURE_LABELS[m],
+                index=list(Measure).index(item["measure"]), key=f"sm{item['id']}")
+            if st.button("Rimuovi", key=f"sd{item['id']}"):
+                d["secondary_list"] = [x for x in d["secondary_list"] if x["id"] != item["id"]]
+                st.rerun()
+    if st.button("Aggiungi esito secondario"):
+        d["secondary_list"].append(_new_outcome_row())
+        st.rerun()
     ok = all([d.get("title"), d.get("population"), d.get("intervention"), d.get("comparison"), d.get("o_name")])
     if not ok:
         st.caption("Compila titolo, P, I, C e il nome dell'esito primario per procedere.")
@@ -168,17 +179,11 @@ elif step == 5:
 else:
     st.subheader("Riepilogo e avvio")
 
-    def parse_outcomes(text: str) -> list[Outcome]:
-        out = []
-        for line in text.splitlines():
-            parts = [p.strip() for p in line.split("|")]
-            if parts and parts[0]:
-                out.append(Outcome(
-                    name=parts[0],
-                    unit=parts[1] if len(parts) > 1 else "",
-                    measure=parse_measure(parts[2]) if len(parts) > 2 else Measure.mean_difference,
-                ))
-        return out
+    def secondary_outcomes() -> list[Outcome]:
+        return [
+            Outcome(name=x["name"], unit=x.get("unit", ""), measure=x["measure"])
+            for x in d.get("secondary_list", []) if x.get("name", "").strip()
+        ]
 
     def lines(text: str) -> list[str]:
         return [x.strip() for x in (text or "").splitlines() if x.strip()]
@@ -190,7 +195,7 @@ else:
                 population=d["population"], intervention=d["intervention"], comparison=d["comparison"],
                 outcomes=Outcomes(
                     primary=Outcome(name=d["o_name"], unit=d.get("o_unit", ""), measure=d["o_measure"]),
-                    secondary=parse_outcomes(d.get("secondary", "")),
+                    secondary=secondary_outcomes(),
                 ),
             ),
             eligibility=Eligibility(
