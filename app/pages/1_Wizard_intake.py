@@ -26,6 +26,14 @@ MEASURE_LABELS = {
     Measure.odds_ratio: "odds ratio",
     Measure.smd: "SMD",
 }
+# Mappa tollerante per gli esiti secondari scritti a mano: accetta sia le
+# etichette italiane (come si vedono nel menu) sia i codici interni inglesi.
+MEASURE_FROM_TEXT = {lbl.lower(): m for m, lbl in MEASURE_LABELS.items()}
+MEASURE_FROM_TEXT.update({m.value: m for m in Measure})
+
+
+def parse_measure(raw: str) -> Measure:
+    return MEASURE_FROM_TEXT.get((raw or "").strip().lower(), Measure.mean_difference)
 
 d = st.session_state.setdefault("draft", {})
 st.session_state.setdefault("step", 0)
@@ -74,7 +82,8 @@ if step == 0:
                                   index=list(Measure).index(d.get("o_measure", Measure.mean_difference)))
     d["secondary"] = st.text_area(
         "Esiti secondari (uno per riga: nome | unita' | misura)",
-        d.get("secondary", "Durata blocco sensitivo | minuti | mean_difference"))
+        d.get("secondary", "Durata blocco sensitivo | minuti | differenza media"))
+    st.caption("Misura: scrivi pure in italiano (differenza media, rischio relativo, odds ratio, SMD).")
     ok = all([d.get("title"), d.get("population"), d.get("intervention"), d.get("comparison"), d.get("o_name")])
     if not ok:
         st.caption("Compila titolo, P, I, C e il nome dell'esito primario per procedere.")
@@ -167,7 +176,7 @@ else:
                 out.append(Outcome(
                     name=parts[0],
                     unit=parts[1] if len(parts) > 1 else "",
-                    measure=Measure(parts[2]) if len(parts) > 2 else Measure.mean_difference,
+                    measure=parse_measure(parts[2]) if len(parts) > 2 else Measure.mean_difference,
                 ))
         return out
 
