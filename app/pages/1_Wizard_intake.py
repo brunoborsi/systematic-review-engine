@@ -30,11 +30,30 @@ d = st.session_state.setdefault("draft", {})
 st.session_state.setdefault("step", 0)
 
 
-def _new_outcome_row(name="", unit="", measure=Measure.mean_difference):
+def _new_outcome_row(name="", unit="minuti", measure=Measure.mean_difference):
     """Riga di esito secondario con id stabile (per add/remove sicuri)."""
     rid = d.get("_sec_counter", 0)
     d["_sec_counter"] = rid + 1
     return {"id": rid, "name": name, "unit": unit, "measure": measure}
+
+
+COMMON_UNITS = ["minuti", "ore", "giorni", "mg", "g", "ml", "%", "mmHg",
+                "punteggio", "conteggio", "altro…"]
+
+
+def unit_picker(container, current, key):
+    """Menu a tendina per l'unita' di misura, con voce 'altro…' a testo libero."""
+    fixed = COMMON_UNITS[:-1]
+    if current and current not in fixed:
+        idx = len(COMMON_UNITS) - 1  # 'altro…'
+    else:
+        idx = COMMON_UNITS.index(current) if current in fixed else 0
+    sel = container.selectbox("Unita'", COMMON_UNITS, index=idx, key=key + "_u")
+    if sel == "altro…":
+        return container.text_input(
+            "Unita' (specifica)", current if current not in fixed else "",
+            key=key + "_uc", placeholder="es. mcg/kg")
+    return sel
 
 
 def progress_bar():
@@ -74,7 +93,7 @@ if step == 0:
     st.markdown("**Esito primario (O)**")
     c1, c2, c3 = st.columns([2, 1, 2])
     d["o_name"] = c1.text_input("Nome", d.get("o_name", ""))
-    d["o_unit"] = c2.text_input("Unita'", d.get("o_unit", ""))
+    d["o_unit"] = unit_picker(c2, d.get("o_unit", "minuti"), key="o")
     d["o_measure"] = c3.selectbox("Misura", list(Measure),
                                   format_func=lambda m: MEASURE_LABELS[m],
                                   index=list(Measure).index(d.get("o_measure", Measure.mean_difference)))
@@ -85,7 +104,7 @@ if step == 0:
         with st.container(border=True):
             item["name"] = st.text_input("Nome esito", item["name"], key=f"sn{item['id']}")
             sc1, sc2 = st.columns(2)
-            item["unit"] = sc1.text_input("Unita'", item["unit"], key=f"su{item['id']}")
+            item["unit"] = unit_picker(sc1, item["unit"], key=f"su{item['id']}")
             item["measure"] = sc2.selectbox(
                 "Misura", list(Measure), format_func=lambda m: MEASURE_LABELS[m],
                 index=list(Measure).index(item["measure"]), key=f"sm{item['id']}")
