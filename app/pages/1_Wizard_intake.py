@@ -239,7 +239,21 @@ else:
     if c2.button("Congela e avvia ↗", type="primary", use_container_width=True):
         if freeze:
             protocol.freeze()
-        path = protocol.save()
-        st.success(f"Protocollo salvato: {path.name}"
+        protocol.save()  # salvataggio su file (utile in locale)
+        # Memoria di sessione: sopravvive alla navigazione e la legge la Dashboard
+        # anche quando lo storage su disco viene azzerato (Streamlit Cloud).
+        st.session_state.setdefault("protocols", {})[protocol.meta.protocol_id] = protocol
+        st.session_state["last_protocol_yaml"] = protocol.to_yaml()
+        st.session_state["last_protocol_id"] = protocol.meta.protocol_id
+        st.success(f"Protocollo creato: {protocol.meta.protocol_id}"
                    + (" · congelato (pre-registrazione)" if freeze else " · bozza"))
-        st.caption("Apri **Dashboard** per seguire l'avanzamento (pipeline non ancora collegata in questo MVP).")
+
+    if st.session_state.get("last_protocol_yaml"):
+        st.download_button(
+            "⬇️ Scarica il protocollo (YAML)",
+            st.session_state["last_protocol_yaml"],
+            file_name=f"{st.session_state['last_protocol_id']}.yaml",
+            mime="text/yaml",
+        )
+        st.caption("Apri **Dashboard** per vederlo. Scarica il file per conservarlo "
+                   "(la memoria online è temporanea).")

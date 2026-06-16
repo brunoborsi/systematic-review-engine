@@ -22,13 +22,26 @@ ICONS = {
 
 st.title("📊 Dashboard")
 
-protocols = list_protocols()
+# Sorgenti: memoria di sessione (sopravvive su Streamlit Cloud) + file su disco.
+by_id = {}
+for p in st.session_state.get("protocols", {}).values():
+    by_id[p.meta.protocol_id] = p
+for path in list_protocols():
+    try:
+        prot = Protocol.load(path)
+        by_id.setdefault(prot.meta.protocol_id, prot)
+    except Exception:  # noqa: BLE001
+        pass
+protocols = list(by_id.values())
+
 if not protocols:
     st.info("Nessun protocollo. Crea un protocollo dal **Wizard intake**.")
     st.stop()
 
-choice = st.selectbox("Protocollo", protocols, format_func=lambda p: p.name)
-protocol = Protocol.load(choice)
+protocol = st.selectbox(
+    "Protocollo", protocols,
+    format_func=lambda p: f"{p.meta.protocol_id} — {p.meta.title}",
+)
 
 c1, c2 = st.columns(2)
 c1.metric("Titolo", protocol.meta.title)
