@@ -21,14 +21,14 @@ Stato dell'infrastruttura:
 
 ---
 
-## Fase 1 — Motore statistico (COMPUTE)  ← punto di partenza consigliato
-- [ ] Servizio di calcolo (R `meta`/`metafor` o Python) come microservizio HTTP, in container Docker dedicato
-- [ ] Effetto random-effects + intervallo di confidenza, I²/τ²
-- [ ] Forest plot e funnel plot (contour-enhanced)
+## Fase 1 — Motore statistico (COMPUTE)
+- [x] Servizio di calcolo (Python/FastAPI) come microservizio HTTP, in container Docker dedicato (`stats-engine`)
+- [x] Effetto random-effects (DerSimonian-Laird) + intervallo di confidenza, I²/τ²
+- [x] Forest plot (PNG)
+- [ ] Funnel plot (contour-enhanced)
 - [ ] Meta-regressione
 - [ ] Trial-Sequential Analysis (TSA) custom — il pezzo più impegnativo
-- [ ] Test di regressione automatico contro Heesen (gate di integrità)
-- [ ] Generazione delle figure come file
+- [x] Test di regressione automatico contro Heesen (gate di integrità) — riproduce 240.8 / I²=77% / Z=3.07
 
 ## Fase 2 — Ricerca e dati (HARVEST → EXTRACT)
 - [ ] Registrare la chiave NCBI gratuita (con l'email del progetto)
