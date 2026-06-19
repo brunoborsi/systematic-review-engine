@@ -31,8 +31,8 @@ Stato dell'infrastruttura:
 - [x] Test di regressione automatico contro Heesen (gate di integrità) — riproduce 240.8 / I²=77% / Z=3.07
 
 ## Fase 2 — Ricerca e dati (HARVEST → EXTRACT)
-- [ ] Registrare la chiave NCBI gratuita (con l'email del progetto)
-- [ ] Agente Ricercatore: query da PICO → PubMed + Europe PMC + CrossRef, dedup, scoring → conteggi PRISMA reali
+- [ ] Registrare la chiave NCBI gratuita (con l'email del progetto) — opzionale (alza il limite a 10 req/s)
+- [~] Agente Ricercatore — **v1 PubMed FATTO** (pagina "Ricerca" live: cerca su PubMed → titolo/autori/anno/PMID/DOI + conteggio PRISMA reale). Da aggiungere: Europe PMC + CrossRef, deduplica, scoring affidabilità
 - [ ] Screening: includi/escludi con motivazione + checkpoint umano
 - [ ] Recuperatore full-text: cascata PMC → DOI → Unpaywall → preprint
 - [ ] Estrattore: dati → JSON con citazione + pagina (via Claude/Max)
