@@ -115,7 +115,7 @@ class Execution(BaseModel):
 
 
 class Operational(BaseModel):
-    contact_email: str = ""
+    contact_email: str = "systematicreview-IT@proton.me"
     api_keys: str = "from_env"
 
 

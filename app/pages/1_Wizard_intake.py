@@ -190,7 +190,8 @@ elif step == 4:
 # STEP 6 - OPERATIVO --------------------------------------------------------
 elif step == 5:
     st.subheader("6 · Operativo")
-    d["email"] = st.text_input("Email (polite pool CrossRef/Unpaywall)", d.get("email", ""))
+    d["email"] = st.text_input("Email (polite pool CrossRef/Unpaywall)",
+                               d.get("email", "systematicreview-IT@proton.me"))
     st.caption("🔑 Chiavi API: gestite via variabili d'ambiente, mai nel Protocollo.")
     nav()
 
