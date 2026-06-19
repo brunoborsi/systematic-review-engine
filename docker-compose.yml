@@ -1,0 +1,19 @@
+services:
+  app:
+    build: .
+    image: srev-app:latest
+    container_name: srev-app
+    restart: unless-stopped
+    networks:
+      - edge
+    volumes:
+      - srev-data:/app/protocols
+    expose:
+      - "8501"
+
+networks:
+  edge:
+    external: true
+
+volumes:
+  srev-data:
