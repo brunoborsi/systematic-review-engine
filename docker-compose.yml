@@ -6,14 +6,28 @@ services:
     restart: unless-stopped
     networks:
       - edge
+      - internal
     volumes:
       - srev-data:/app/protocols
     expose:
       - "8501"
+    environment:
+      - STATS_ENGINE_URL=http://stats-engine:8000
+
+  stats-engine:
+    build: ./stats_engine
+    image: srev-stats:latest
+    container_name: srev-stats
+    restart: unless-stopped
+    networks:
+      - internal
+    expose:
+      - "8000"
 
 networks:
   edge:
     external: true
+  internal: {}
 
 volumes:
   srev-data:
