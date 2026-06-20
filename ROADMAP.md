@@ -52,10 +52,12 @@ Stato dell'infrastruttura:
 - [ ] Benchmark multi-AI (stesso input a più modelli → griglia di punteggio)
 
 ## Fase 4 — Persistenza e orchestrazione
-- [ ] PostgreSQL: container + migrazione storage da file a DB
-- [ ] Orchestratore: coordina gli agenti e alimenta la dashboard reale (sostituisce i dati simulati)
-- [ ] Gestione segreti (.env sul server per le chiavi API)
-- [ ] Checkpoint umani nell'interfaccia (coda screening, lista acquisti, QA finale)
+- [x] PostgreSQL: container `db` (postgres:16) + `core/db.py` (tabella runs jsonb: save/load/list/delete)
+- [x] Dashboard reale: stato reale della sessione (candidati/inclusi/estratti/meta/bozza) + run salvati persistenti (sostituiti i dati simulati)
+- [x] Gestione segreti (.env sul server per le chiavi API: NCBI, Anthropic, Postgres)
+- [ ] Orchestratore "esegui pipeline": flusso guidato che concatena gli step
+- [ ] Salvataggio automatico del run mentre si avanza
+- [~] Checkpoint umani — screening fatto; lista acquisti / QA finale: dopo
 
 ## Fase 5 — Validazione per la tesi
 - [ ] Validare il motore completo (forest/funnel/TSA) contro Heesen
