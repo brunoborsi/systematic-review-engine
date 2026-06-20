@@ -1,8 +1,4 @@
-"""Dashboard di avanzamento: i nove agenti, conteggi PRISMA, KPI.
-
-In questo MVP lo stato e' simulato (core.state.RunState.demo). Quando arrivera'
-l'orchestratore reale, basta sostituire la fonte dello stato.
-"""
+"""Dashboard — stato reale della sessione + gestione dei run salvati (Postgres)."""
 import sys
 from pathlib import Path
 
@@ -10,65 +6,97 @@ sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
 
 import streamlit as st  # noqa: E402
 
-from core.protocol import Protocol, list_protocols  # noqa: E402
-from core.state import RunState  # noqa: E402
+from core.protocol import Protocol  # noqa: E402
+from core import db  # noqa: E402
 
 st.set_page_config(page_title="Dashboard", page_icon="📊", layout="centered")
 
-ICONS = {
-    "in attesa": "⚪", "in corso": "🔵", "completato": "✅",
-    "errore": "🔴", "checkpoint umano": "🟠",
-}
-
 st.title("📊 Dashboard")
+st.caption("Stato della sessione corrente e gestione dei run salvati (persistenti).")
 
-# Sorgenti: memoria di sessione (sopravvive su Streamlit Cloud) + file su disco.
-by_id = {}
-for p in st.session_state.get("protocols", {}).values():
-    by_id[p.meta.protocol_id] = p
-for path in list_protocols():
+STAGE_KEYS = ("harvest_result", "screening", "extracted", "meta_result", "review_text")
+
+
+def current_run_data() -> dict:
+    protocols = st.session_state.get("protocols", {})
+    prot = list(protocols.values())[-1] if protocols else None
+    data = {"protocol": prot.model_dump(mode="json") if prot else None}
+    for k in STAGE_KEYS:
+        data[k] = st.session_state.get(k)
+    return data
+
+
+def restore_run_data(data: dict) -> None:
+    if data.get("protocol"):
+        p = Protocol.model_validate(data["protocol"])
+        st.session_state["protocols"] = {p.meta.protocol_id: p}
+    for k in STAGE_KEYS:
+        st.session_state[k] = data.get(k)
+
+
+def _counts(data: dict) -> dict:
+    h = data.get("harvest_result") or {}
+    scr = data.get("screening") or {}
+    return {
+        "candidati": len(h.get("records", [])) if h else 0,
+        "inclusi": sum(1 for v in scr.values() if v.get("decision") == "Includi"),
+        "estratti": len(data.get("extracted") or {}),
+        "meta": bool(data.get("meta_result")),
+        "bozza": bool(data.get("review_text")),
+    }
+
+
+def summary(data: dict) -> str:
+    c = _counts(data)
+    return (f"candidati {c['candidati']} · inclusi {c['inclusi']} · estratti {c['estratti']} · "
+            f"meta {'✓' if c['meta'] else '—'} · bozza {'✓' if c['bozza'] else '—'}")
+
+
+data = current_run_data()
+prot = data.get("protocol")
+
+st.subheader("Sessione corrente")
+st.write("**Protocollo:**", prot["meta"]["title"] if prot else "— (nessuno: crealo dal Wizard)")
+c = _counts(data)
+cols = st.columns(5)
+cols[0].metric("Candidati", c["candidati"])
+cols[1].metric("Inclusi", c["inclusi"])
+cols[2].metric("Studi estratti", c["estratti"])
+cols[3].metric("Meta-analisi", "✓" if c["meta"] else "—")
+cols[4].metric("Bozza", "✓" if c["bozza"] else "—")
+
+st.divider()
+st.subheader("💾 Salva la sessione")
+default_name = prot["meta"]["protocol_id"] if prot else "run"
+name = st.text_input("Nome del run", default_name)
+if st.button("Salva run", type="primary", disabled=not name.strip()):
     try:
-        prot = Protocol.load(path)
-        by_id.setdefault(prot.meta.protocol_id, prot)
-    except Exception:  # noqa: BLE001
-        pass
-protocols = list(by_id.values())
-
-if not protocols:
-    st.info("Nessun protocollo. Crea un protocollo dal **Wizard intake**.")
-    st.stop()
-
-protocol = st.selectbox(
-    "Protocollo", protocols,
-    format_func=lambda p: f"{p.meta.protocol_id} — {p.meta.title}",
-)
-
-c1, c2 = st.columns(2)
-c1.metric("Titolo", protocol.meta.title)
-c2.metric("Stato", "🔒 congelato" if protocol.meta.frozen else "✏️ bozza")
-
-run = RunState.demo(protocol.meta.protocol_id)
+        db.save_run(name.strip(), data, status=summary(data))
+        st.success(f"Run «{name}» salvato.")
+    except Exception as e:  # noqa: BLE001
+        st.error(f"Errore nel salvataggio: {e}")
 
 st.divider()
-st.subheader("Pipeline · 9 agenti")
-for a in run.agents:
-    st.write(f"{ICONS.get(a.status, '⚪')} **{a.name}** — {a.status}"
-             + (f" · _{a.detail}_" if a.detail else ""))
+st.subheader("📂 Run salvati")
+try:
+    runs = db.list_runs()
+except Exception as e:  # noqa: BLE001
+    st.error(f"Database non raggiungibile: {e}")
+    runs = []
 
-st.divider()
-st.subheader("Conteggi PRISMA")
-p = run.prisma
-cols = st.columns(4)
-cols[0].metric("Trovati", p.get("found", "—"))
-cols[1].metric("Dopo dedup", p.get("after_dedup", "—"))
-cols[2].metric("Screenati", p.get("screened", "—"))
-cols[3].metric("Inclusi", p.get("included") or "—")
-
-st.subheader("KPI")
-k = run.kpi
-cols = st.columns(3)
-cols[0].metric("Tasso allucinazioni", k.get("hallucination_rate") or "—")
-cols[1].metric("Interventi umani", k.get("human_interventions", "—"))
-cols[2].metric("Costo (€)", k.get("total_cost_eur", "—"))
-
-st.caption("Stato simulato — la pipeline reale (orchestratore + agenti) non e' ancora collegata.")
+if not runs:
+    st.caption("Nessun run salvato. Salva la sessione qui sopra per ritrovarla in futuro.")
+for r in runs:
+    with st.container(border=True):
+        st.markdown(f"**{r['name']}**")
+        st.caption(f"{r.get('status') or ''} · aggiornato {r['updated']:%Y-%m-%d %H:%M}")
+        b1, b2 = st.columns(2)
+        if b1.button("Carica", key=f"load_{r['id']}"):
+            d = db.load_run(r["id"])
+            if d:
+                restore_run_data(d)
+                st.success(f"Run «{r['name']}» caricato nella sessione.")
+                st.rerun()
+        if b2.button("Elimina", key=f"del_{r['id']}"):
+            db.delete_run(r["id"])
+            st.rerun()
