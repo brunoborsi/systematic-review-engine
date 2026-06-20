@@ -15,6 +15,22 @@ services:
       - STATS_ENGINE_URL=http://stats-engine:8000
       - NCBI_API_KEY=${NCBI_API_KEY:-}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - DATABASE_URL=postgresql://srev:${POSTGRES_PASSWORD:-srev}@db:5432/srev
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16-alpine
+    container_name: srev-db
+    restart: unless-stopped
+    networks:
+      - internal
+    environment:
+      - POSTGRES_DB=srev
+      - POSTGRES_USER=srev
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-srev}
+    volumes:
+      - db-data:/var/lib/postgresql/data
 
   stats-engine:
     build: ./stats_engine
@@ -33,3 +49,4 @@ networks:
 
 volumes:
   srev-data:
+  db-data:
