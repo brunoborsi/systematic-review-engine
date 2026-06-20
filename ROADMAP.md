@@ -64,8 +64,9 @@ Stato dell'infrastruttura:
 
 ## Trasversale (infra)
 - [x] Accesso protetto — Caddy basic_auth davanti a tutta l'app, 2 account (sy_re_tommaso, sy_re_alessandro), password bcrypt. (login in-app con logout/per-utente: dopo, se serve)
+- [x] Pagine di documentazione in-app: "Info e obiettivi" + "Istruzioni per un corretto utilizzo" (scopo + guida passo-passo dettagliata)
 - [ ] Backup (dump Postgres + backup Hetzner)
-- [ ] Completare "Scopo" e "Autori" nella pagina Info
+- [ ] Completare "Scopo" e "Autori" nella pagina Info (con i dati definitivi)
 - [ ] (Opzionale, "prodotto dopo") login multiutente
 
 ---
