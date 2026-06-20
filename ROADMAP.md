@@ -47,7 +47,7 @@ Stato dell'infrastruttura:
 
 ## Fase 3 — Scrittura e confronto
 - [x] Collegamento Estrazione → Motore statistico — pagina "Calcolo": dati estratti+verificati, abbinamento bracci (intervento/confronto) → forest plot reale dal motore
-- [ ] Redattore: scrive IMRaD usando solo i numeri calcolati e le fonti verificate
+- [x] Redattore (AI) — pagina "Scrittura" live: bozza IMRaD dai soli numeri del motore + fonti verificate (prompt/modello editabili, download Markdown). Testato sul server.
 - [ ] Generazione documento .docx/PDF (figure, flow-chart PRISMA, GRADE)
 - [ ] Benchmark multi-AI (stesso input a più modelli → griglia di punteggio)
 
