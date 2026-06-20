@@ -61,9 +61,21 @@ Stato dell'infrastruttura:
 - [~] Checkpoint umani — screening fatto; lista acquisti / QA finale: dopo
 
 ## Fase 5 — Validazione per la tesi
-- [ ] Validare il motore completo (forest/funnel/TSA) contro Heesen
-- [ ] Eseguire la pipeline su 1-2 quesiti reali e confrontare con revisioni esistenti
-- [ ] Raccogliere i KPI: tempo, % citazioni verificate, tasso allucinazioni, interventi umani
+- [x] **Run #1 (giu 2026) — quesito Heesen-like, eseguito sul server (`validate_e2e.py`).**
+  Esito: skeleton gira end-to-end (89s senza filtro / 217s con filtro), **motore esatto**
+  (`/validate/heesen` passa: MD 240.8, I²=76.8, Z 3.07), **gate anti-allucinazione ok**
+  (87–100% righe verificate, alcune bloccate). PRODOTTO un `.docx` reale (95 KB).
+  **MA: la validità scientifica autonoma fallisce a monte del calcolo** →
+  - senza filtro per disegno la ricerca pesca **review/meta-analisi/editoriali** (relevance-sort) → 0 studi componibili (corretto: da aggregati non si fa MA arm-level);
+  - col filtro "solo RCT" la MA parte (k=5) ma **I²=99,5%**: la pipeline ha messo insieme **comparazioni diverse** (dex-vs-placebo con perineurale-vs-e.v.) e **outcome diversi** (durata analgesia, durata blocco, onset rebound pain) → risultato privo di senso.
+- [ ] **Gap tecnici emersi dal Run #1 (da affrontare, scelte scientifiche dai ricercatori):**
+  - [ ] **Filtro per disegno di studio** in ricerca/screening (escludere review/meta-analisi/editoriali; tenere RCT primari) — il fix con più impatto
+  - [ ] **Screening per PICO**: includere solo studi con la comparazione giusta (es. perineurale *vs* e.v.), non dex-vs-controllo — è il vero collo di bottiglia (rafforza il caso dello [[screening autonomo]] futuro)
+  - [ ] **Armonizzazione degli outcome**: non aggregare outcome diversi nello stesso pool
+  - [ ] **Abbinamento bracci per ruolo PICO** (intervento vs confronto), non "primi 2 gruppi"; gestire studi multi-braccio e righe duplicate
+  - [ ] **Normalizzazione unità** (ore vs minuti) prima del calcolo
+- [ ] Run #2: ripetere su un set di RCT primari realmente confrontabili (stessa comparazione+outcome) e confrontare con una revisione esistente
+- [ ] Raccogliere i KPI a regime: tempo, % citazioni verificate, tasso allucinazioni, interventi umani
 
 ## Trasversale (infra)
 - [x] Accesso protetto — Caddy basic_auth davanti a tutta l'app, 2 account (sy_re_tommaso, sy_re_alessandro), password bcrypt. (login in-app con logout/per-utente: dopo, se serve)
