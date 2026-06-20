@@ -56,7 +56,7 @@ Stato dell'infrastruttura:
 - [x] Dashboard reale: stato reale della sessione (candidati/inclusi/estratti/meta/bozza) + run salvati persistenti (sostituiti i dati simulati)
 - [x] Gestione segreti (.env sul server per le chiavi API: NCBI, Anthropic, Postgres)
 - [ ] Orchestratore "esegui pipeline": flusso guidato che concatena gli step
-- [ ] Salvataggio automatico del run mentre si avanza
+- [x] Salvataggio automatico del run mentre si avanza (core/session.py: autosave su Postgres ad ogni cambiamento di stato, in ogni pagina della pipeline)
 - [~] Checkpoint umani — screening fatto; lista acquisti / QA finale: dopo
 
 ## Fase 5 — Validazione per la tesi
