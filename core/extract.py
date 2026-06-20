@@ -124,13 +124,49 @@ def extract_data(text: str, outcome: str = "",
     return {"data": data, "usage": resp.get("usage", {}), "raw": raw}
 
 
+def _norm(s) -> str:
+    return " ".join(str(s).lower().split())
+
+
+def _value_in_text(value, norm_text: str, digits_text: str):
+    """True/False se il valore numerico è nel testo; None se valore assente."""
+    if value in (None, "", "NA", "na"):
+        return None
+    s = str(value).strip().replace(",", ".")
+    try:
+        f = float(s)
+    except ValueError:
+        return _norm(value) in norm_text
+    g = f"{f:g}"
+    forms = {g, g.replace(".", ","), g.replace(".", "·")}
+    if f == int(f):
+        forms.add(str(int(f)))
+    if any(form and form in norm_text for form in forms):
+        return True
+    # tolleranza di formattazione: stessa sequenza di cifre (es. 210.9 -> 2109)
+    digits = "".join(ch for ch in g if ch.isdigit())
+    return len(digits) >= 3 and digits in digits_text
+
+
 def verify_quotes(text: str, rows: list[dict]) -> list[dict]:
-    """Gate anti-allucinazione (deterministico): la quote esiste nel testo?"""
-    norm = " ".join(text.lower().split())
+    """Gate anti-allucinazione: i NUMERI estratti sono presenti nel testo?
+
+    Un dato è verificato se i suoi numeri chiave (media, DS) si trovano nel testo
+    sorgente, oppure se la citazione testuale esatta combacia. Robusto coi dati
+    da tabella, dove la 'frase identica' spesso non esiste.
+    """
+    norm_text = _norm(text)
+    digits_text = "".join(ch for ch in norm_text if ch.isdigit())
     out = []
     for row in rows:
-        q = " ".join((row.get("quote_verbatim", "") or "").lower().split())
         row = dict(row)
-        row["verificato"] = bool(q) and q in norm
+        checks = [_value_in_text(row.get(f), norm_text, digits_text) for f in ("mean", "sd")]
+        present = [c for c in checks if c is not None]
+        numbers_ok = bool(present) and all(present)
+        q = _norm(row.get("quote_verbatim", ""))
+        quote_ok = bool(q) and q in norm_text
+        row["verificato"] = bool(numbers_ok or quote_ok)
+        row["nota_verifica"] = ("numeri trovati nel testo" if numbers_ok
+                                else "citazione trovata" if quote_ok else "NON verificato")
         out.append(row)
     return out
