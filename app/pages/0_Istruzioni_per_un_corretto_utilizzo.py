@@ -115,7 +115,24 @@ scaricabile, pronto da rivedere.
 
 ## Cosa lo strumento NON fa
 
-- Non decide al posto tuo cosa includere/escludere.
+- **Non decide al posto tuo cosa includere o escludere.** La scelta di quali
+  studi entrano nella revisione è una **decisione scientifica** che resta agli
+  autori: lo strumento *prepara il tavolo* (ti mostra ogni candidato accanto ai
+  criteri del protocollo, ti offre i pulsanti Includi/Escludi/Da decidere, un
+  campo *motivo* modificabile e un log scaricabile), ma **la crocetta la metti
+  tu**. Per questo lo screening è un **checkpoint umano**: l'app esegue da sola
+  i passi meccanici e *si ferma qui*, in attesa del tuo giudizio. È una scelta
+  voluta — da questa decisione dipende la validità di tutta la meta-analisi a
+  valle — ed è coerente con gli standard (PRISMA/Cochrane), che raccomandano lo
+  screening fatto da revisori umani, idealmente **due in modo indipendente**.
+  Un'eventuale pre-classificazione automatica resta solo un *suggerimento*, mai
+  la decisione finale.
+
+  > *Esempio.* Lo strumento ti presenta lo studio **"Dexamethasone added to
+  > bupivacaine for nerve block"** con accanto i tuoi criteri (adulti, RCT,
+  > esito = durata dell'analgesia). **Non scrive lui "incluso":** lo leggi e
+  > decidi tu — *Includi* (è un RCT pertinente), oppure *Escludi → motivo:
+  > "popolazione pediatrica"*. La tua scelta, con il motivo, finisce nel log.
 - Non garantisce l'esaustività assoluta della letteratura (segue uno standard
   PRISMA documentato, non l'onniscienza).
 - Non produce un testo "pronto per la pubblicazione": produce una **bozza
