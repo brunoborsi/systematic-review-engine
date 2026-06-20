@@ -3,6 +3,13 @@
 Obiettivo: rendere l'app **operativa end-to-end**, cioè capace di produrre una
 revisione sistematica con meta-analisi reale a partire da un quesito PICO.
 
+**Strategia (concordata):**
+- **Skeleton-first** — prima tutta la pipeline tecnica funzionante end-to-end,
+  poi la profondità/rifinitura. Poi gli scienziati testano e calibrano la scienza.
+- **Niente scienza hardcoded** — ogni scelta scientifica (stringhe di ricerca,
+  criteri, prompt, metodo statistico, soglie) è un **parametro modificabile** dai
+  ricercatori, non codice fisso.
+
 Stato dell'infrastruttura:
 - App online su **https://systematicreview.it** (Docker + Caddy, HTTPS, storage permanente)
 - VPS Hetzner sicuro (`bruno@46.62.196.112`) + PAI/bello
@@ -33,7 +40,7 @@ Stato dell'infrastruttura:
 ## Fase 2 — Ricerca e dati (HARVEST → EXTRACT)
 - [x] Registrare la chiave NCBI gratuita — FATTO (configurata sul server in .env, limite 10 req/s)
 - [x] Agente Ricercatore — **PubMed + Europe PMC con deduplica** FATTO (pagina "Ricerca" live: conteggi per database = record identificati PRISMA, candidati unici dopo dedup). Da aggiungere: CrossRef (risoluzione DOI in fase estrazione), scoring affidabilità
-- [ ] Screening: includi/escludi con motivazione + checkpoint umano
+- [x] Screening v1 — pagina "Screening" live: includi/escludi con motivazione + checkpoint umano, motivi modificabili, conteggi PRISMA, log decisionale scaricabile. (AI di pre-classificazione: dopo)
 - [ ] Recuperatore full-text: cascata PMC → DOI → Unpaywall → preprint
 - [ ] Estrattore: dati → JSON con citazione + pagina (via Claude/Max)
 - [ ] Verificatore: gate citazione deterministico
