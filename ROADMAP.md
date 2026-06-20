@@ -55,7 +55,7 @@ Stato dell'infrastruttura:
 - [x] PostgreSQL: container `db` (postgres:16) + `core/db.py` (tabella runs jsonb: save/load/list/delete)
 - [x] Dashboard reale: stato reale della sessione (candidati/inclusi/estratti/meta/bozza) + run salvati persistenti (sostituiti i dati simulati)
 - [x] Gestione segreti (.env sul server per le chiavi API: NCBI, Anthropic, Postgres)
-- [ ] Orchestratore "esegui pipeline": flusso guidato che concatena gli step
+- [x] Orchestratore "Esegui pipeline" — pagina guidata: checklist di stato + azione successiva contestuale; esegue i passi automatici (ricerca, full-text, estrazione AI di tutti gli inclusi, calcolo con auto-pairing bracci, scrittura, documento) e si ferma allo screening (checkpoint umano)
 - [x] Salvataggio automatico del run mentre si avanza (core/session.py: autosave su Postgres ad ogni cambiamento di stato, in ogni pagina della pipeline)
 - [~] Checkpoint umani — screening fatto; lista acquisti / QA finale: dopo
 
