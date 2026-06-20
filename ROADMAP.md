@@ -42,8 +42,8 @@ Stato dell'infrastruttura:
 - [x] Agente Ricercatore — **PubMed + Europe PMC con deduplica** FATTO (pagina "Ricerca" live: conteggi per database = record identificati PRISMA, candidati unici dopo dedup). Da aggiungere: CrossRef (risoluzione DOI in fase estrazione), scoring affidabilità
 - [x] Screening v1 — pagina "Screening" live: includi/escludi con motivazione + checkpoint umano, motivi modificabili, conteggi PRISMA, log decisionale scaricabile. (AI di pre-classificazione: dopo)
 - [x] Recuperatore full-text v1 — pagina "Full-text" live: cascata Unpaywall → PMC per gli studi inclusi, paywall marcati "da acquistare". (preprint/cascata estesa: dopo)
-- [ ] Estrattore: dati → JSON con citazione + pagina (via Claude/Max)
-- [ ] Verificatore: gate citazione deterministico
+- [x] Estrattore (AI) v1 — pagina "Estrazione" live: full-text (BioC/Europe PMC) → Claude estrae n/media/DS per gruppo con citazione (prompt e modello editabili). Testato end-to-end sul server.
+- [~] Verificatore — gate citazione presente (verify_quotes), ma v1 troppo severo coi dati da tabella → da rendere robusto: verificare che i NUMERI estratti siano nel testo sorgente
 
 ## Fase 3 — Scrittura e confronto
 - [ ] Redattore: scrive IMRaD usando solo i numeri calcolati e le fonti verificate
