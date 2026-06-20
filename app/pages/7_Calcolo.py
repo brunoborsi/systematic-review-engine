@@ -109,3 +109,6 @@ if res:
         st.image(base64.b64decode(res["forest_plot_png_base64"]), use_container_width=True)
     st.caption("I numeri provengono dal motore statistico (R/Python-equivalente), non dall'AI. "
                "Prossimo passo: scrittura del documento IMRaD da questi numeri.")
+
+from core.session import autosave  # noqa: E402
+autosave()

@@ -94,3 +94,6 @@ if ex:
     if u:
         st.caption(f"Token: input {u.get('input_tokens', '?')}, output {u.get('output_tokens', '?')}.")
     st.caption("Prossimo passo: i dati verificati alimentano il motore statistico (Calcolo).")
+
+from core.session import autosave  # noqa: E402
+autosave()

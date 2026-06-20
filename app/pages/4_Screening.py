@@ -100,3 +100,6 @@ st.download_button("⬇️ Scarica log screening (CSV)", buf.getvalue(),
                    file_name="screening_log.csv", mime="text/csv")
 st.caption("Il log è la tracciabilità decisione-per-decisione — un punto di forza del progetto. "
            "Prossimo passo: recupero del full-text degli studi inclusi.")
+
+from core.session import autosave  # noqa: E402
+autosave()

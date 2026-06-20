@@ -62,3 +62,6 @@ if res:
             if idline:
                 st.markdown(idline)
     st.caption("Prossimo passo della pipeline: screening (includi/escludi con motivazione).")
+
+from core.session import autosave  # noqa: E402
+autosave()

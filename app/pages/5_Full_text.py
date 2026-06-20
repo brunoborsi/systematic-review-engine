@@ -64,3 +64,6 @@ if results:
             else:
                 st.markdown("🔒 **Paywall** — da acquistare, oppure si userà il solo abstract")
     st.caption("Prossimo passo: estrazione dei dati dal full-text (AI).")
+
+from core.session import autosave  # noqa: E402
+autosave()

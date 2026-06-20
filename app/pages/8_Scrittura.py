@@ -68,3 +68,6 @@ if txt:
     if u:
         st.caption(f"Token: input {u.get('input_tokens', '?')}, output {u.get('output_tokens', '?')}.")
     st.caption("Prossimo passo: generazione del documento finale (.docx/PDF).")
+
+from core.session import autosave  # noqa: E402
+autosave()

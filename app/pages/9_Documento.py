@@ -40,3 +40,6 @@ if data:
     )
     st.caption("🏁 Skeleton end-to-end completo: dal quesito al documento, su evidenza reale. "
                "Gli autori possono ora rivedere e calibrare la scienza.")
+
+from core.session import autosave  # noqa: E402
+autosave()
