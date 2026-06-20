@@ -38,8 +38,10 @@ def pmc_from_pmid(pmid: str, email: str = DEFAULT_EMAIL, api_key: str | None = N
     if not pmid:
         return None
     api_key = api_key or os.environ.get("NCBI_API_KEY")
+    # linkname=pubmed_pmc => SOLO la versione PMC dello STESSO articolo
+    # (evita 'pubmed_pmc_refs', cioè gli articoli che lo citano).
     params = {"dbfrom": "pubmed", "db": "pmc", "id": pmid, "retmode": "json",
-              "email": email, "tool": TOOL}
+              "linkname": "pubmed_pmc", "email": email, "tool": TOOL}
     if api_key:
         params["api_key"] = api_key
     try:
@@ -48,7 +50,7 @@ def pmc_from_pmid(pmid: str, email: str = DEFAULT_EMAIL, api_key: str | None = N
         return None
     for ls in data.get("linksets", []):
         for db in ls.get("linksetdbs", []):
-            if db.get("dbto") == "pmc" and db.get("links"):
+            if db.get("linkname") == "pubmed_pmc" and db.get("links"):
                 return str(db["links"][0])
     return None
 

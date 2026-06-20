@@ -86,6 +86,8 @@ def europepmc_search(query: str, retmax: int = 25) -> dict:
         records.append({
             "source": "Europe PMC",
             "pmid": it.get("pmid", "") or "",
+            "pmcid": it.get("pmcid", "") or "",
+            "is_oa": str(it.get("isOpenAccess", "")).upper() == "Y",
             "doi": (it.get("doi", "") or "").lower(),
             "title": (it.get("title", "") or "").rstrip("."),
             "authors": [a.strip() for a in (it.get("authorString", "") or "").split(",") if a.strip()],
@@ -122,13 +124,19 @@ def multi_search(query: str, retmax: int = 25, sources=("pubmed", "europepmc")) 
         per_source["Europe PMC"] = r["count"]
         fetched.extend(r["records"])
 
-    seen, deduped = set(), []
+    seen, deduped = {}, []
     for rec in fetched:
         k = _dedup_key(rec)
         if k in seen:
+            kept = deduped[seen[k]]  # arricchisce il record tenuto coi campi mancanti
+            for f in ("pmcid", "doi", "pmid"):
+                if not kept.get(f) and rec.get(f):
+                    kept[f] = rec[f]
+            if rec.get("is_oa"):
+                kept["is_oa"] = True
             continue
-        seen.add(k)
-        deduped.append(rec)
+        seen[k] = len(deduped)
+        deduped.append(dict(rec))
 
     return {
         "query": query,
