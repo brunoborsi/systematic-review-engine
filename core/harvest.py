@@ -66,7 +66,78 @@ def pubmed_search(query: str, retmax: int = 25, email: str = DEFAULT_EMAIL,
                 "study_type": ", ".join(item.get("pubtype", [])),
             })
 
+    for r in records:
+        r["source"] = "PubMed"
+        r["doi"] = (r.get("doi", "") or "").lower()
     return {"query": query, "count": count, "retrieved": len(records), "records": records}
+
+
+EUROPEPMC = "https://www.ebi.ac.uk/europepmc/webservices/rest/search"
+
+
+def europepmc_search(query: str, retmax: int = 25) -> dict:
+    """Cerca su Europe PMC (biomedico, include preprint e full-text Open Access)."""
+    params = {"query": query, "format": "json",
+              "pageSize": str(min(retmax, 100)), "resultType": "core"}
+    data = _get(f"{EUROPEPMC}?{urllib.parse.urlencode(params)}")
+    count = int(data.get("hitCount", 0))
+    records = []
+    for it in data.get("resultList", {}).get("result", []):
+        records.append({
+            "source": "Europe PMC",
+            "pmid": it.get("pmid", "") or "",
+            "doi": (it.get("doi", "") or "").lower(),
+            "title": (it.get("title", "") or "").rstrip("."),
+            "authors": [a.strip() for a in (it.get("authorString", "") or "").split(",") if a.strip()],
+            "journal": it.get("journalTitle", "") or "",
+            "year": str(it.get("pubYear", "") or ""),
+            "study_type": it.get("pubType", ""),
+        })
+    return {"count": count, "records": records}
+
+
+def _dedup_key(rec: dict) -> str:
+    if rec.get("doi"):
+        return "doi:" + rec["doi"]
+    if rec.get("pmid"):
+        return "pmid:" + rec["pmid"]
+    title = "".join(ch for ch in rec.get("title", "").lower() if ch.isalnum())
+    return "title:" + title
+
+
+def multi_search(query: str, retmax: int = 25, sources=("pubmed", "europepmc")) -> dict:
+    """Ricerca multi-database con deduplica (PubMed + Europe PMC).
+
+    Restituisce i conteggi per database (PRISMA: record identificati) e i
+    candidati unici dopo deduplica per DOI/PMID/titolo.
+    """
+    per_source: dict[str, int] = {}
+    fetched: list[dict] = []
+    if "pubmed" in sources:
+        r = pubmed_search(query, retmax=retmax)
+        per_source["PubMed"] = r["count"]
+        fetched.extend(r["records"])
+    if "europepmc" in sources:
+        r = europepmc_search(query, retmax=retmax)
+        per_source["Europe PMC"] = r["count"]
+        fetched.extend(r["records"])
+
+    seen, deduped = set(), []
+    for rec in fetched:
+        k = _dedup_key(rec)
+        if k in seen:
+            continue
+        seen.add(k)
+        deduped.append(rec)
+
+    return {
+        "query": query,
+        "per_source": per_source,
+        "found_total": sum(per_source.values()),
+        "retrieved": len(fetched),
+        "after_dedup": len(deduped),
+        "records": deduped,
+    }
 
 
 def build_query_from_pico(intervention: str = "", comparison: str = "",
