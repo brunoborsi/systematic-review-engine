@@ -74,7 +74,7 @@ Stato dell'infrastruttura:
   - [ ] **Armonizzazione degli outcome**: non aggregare outcome diversi nello stesso pool
   - [ ] **Abbinamento bracci per ruolo PICO** (intervento vs confronto), non "primi 2 gruppi"; gestire studi multi-braccio e righe duplicate
   - [ ] **Normalizzazione unità** (ore vs minuti) prima del calcolo
-- [ ] Run #2: ripetere su un set di RCT primari realmente confrontabili (stessa comparazione+outcome) e confrontare con una revisione esistente
+- [x] **Run #2 (giu 2026) — demo "fatto bene".** Due esiti: (a) l'assemblaggio *completamente autonomo* di un pool testa-a-testa pulito è ancora **sottile** (pochi RCT perineurale-vs-e.v. OA su PMC + estrazione AI non-deterministica) → conferma che selezione/curatela sono il valore aggiunto; (b) su **set curato corretto (9 RCT di Heesen)** la metà calcolo→scrittura→documento riproduce **esattamente la letteratura** (MD 240,80 min, IC 87,21–394,40, **I²=76,76%**, Z 3,07, p 0,0021 — l'I² *reale*, non lo spurio 99,5% del pool sbagliato), con bozza AI **fedele** ai numeri del motore. Artefatto: `~/Desktop/PROGETTO TOMMY_CLAUDE/validation_run2_demo.docx`.
 - [ ] Raccogliere i KPI a regime: tempo, % citazioni verificate, tasso allucinazioni, interventi umani
 
 ## Trasversale (infra)
