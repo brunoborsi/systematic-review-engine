@@ -32,7 +32,7 @@ Stato dell'infrastruttura:
 
 ## Fase 2 — Ricerca e dati (HARVEST → EXTRACT)
 - [x] Registrare la chiave NCBI gratuita — FATTO (configurata sul server in .env, limite 10 req/s)
-- [~] Agente Ricercatore — **v1 PubMed FATTO** (pagina "Ricerca" live: cerca su PubMed → titolo/autori/anno/PMID/DOI + conteggio PRISMA reale). Da aggiungere: Europe PMC + CrossRef, deduplica, scoring affidabilità
+- [x] Agente Ricercatore — **PubMed + Europe PMC con deduplica** FATTO (pagina "Ricerca" live: conteggi per database = record identificati PRISMA, candidati unici dopo dedup). Da aggiungere: CrossRef (risoluzione DOI in fase estrazione), scoring affidabilità
 - [ ] Screening: includi/escludi con motivazione + checkpoint umano
 - [ ] Recuperatore full-text: cascata PMC → DOI → Unpaywall → preprint
 - [ ] Estrattore: dati → JSON con citazione + pagina (via Claude/Max)
