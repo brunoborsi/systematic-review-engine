@@ -46,6 +46,7 @@ Stato dell'infrastruttura:
 - [x] Verificatore — gate anti-allucinazione robusto: i numeri estratti (media/DS) devono essere presenti nel testo sorgente (tollerante alla formattazione, funziona coi dati da tabella). Testato: 3/3 verificati.
 
 ## Fase 3 — Scrittura e confronto
+- [x] Collegamento Estrazione → Motore statistico — pagina "Calcolo": dati estratti+verificati, abbinamento bracci (intervento/confronto) → forest plot reale dal motore
 - [ ] Redattore: scrive IMRaD usando solo i numeri calcolati e le fonti verificate
 - [ ] Generazione documento .docx/PDF (figure, flow-chart PRISMA, GRADE)
 - [ ] Benchmark multi-AI (stesso input a più modelli → griglia di punteggio)
