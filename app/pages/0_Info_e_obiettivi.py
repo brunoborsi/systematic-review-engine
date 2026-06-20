@@ -65,10 +65,18 @@ Il lavoro è organizzato in una **pipeline** di passi specializzati:
 `ricerca → screening → recupero full-text → estrazione → verifica → calcolo
 statistico → scrittura → confronto multi-AI`
 
-Il principio architetturale: gli **agenti AI** si occupano di giudizio e
-linguaggio (cercare, screenare, estrarre, scrivere); la **verità numerica e la
-verifica** restano codice deterministico. È questa separazione a rendere il
-risultato affidabile.
+Il principio architetturale: gli **agenti AI** si occupano delle parti
+meccaniche e di linguaggio (cercare, recuperare, estrarre, scrivere); la
+**verità numerica e la verifica** restano codice deterministico. È questa
+separazione a rendere il risultato affidabile.
+
+Le **decisioni scientifiche** restano però umane. In particolare lo
+**screening** — la scelta di quali studi includere o escludere — è un
+**checkpoint umano**: l'AI può preparare e proporre, ma la decisione finale,
+con la motivazione registrata nel log, è degli autori. È coerente con gli
+standard (PRISMA/Cochrane), che raccomandano lo screening fatto da revisori,
+idealmente **due in modo indipendente**. Da questa scelta dipende la validità
+di tutta la meta-analisi a valle.
 
 ---
 
