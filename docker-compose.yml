@@ -13,6 +13,7 @@ services:
       - "8501"
     environment:
       - STATS_ENGINE_URL=http://stats-engine:8000
+      - NCBI_API_KEY=${NCBI_API_KEY:-}
 
   stats-engine:
     build: ./stats_engine
