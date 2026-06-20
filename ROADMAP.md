@@ -41,7 +41,7 @@ Stato dell'infrastruttura:
 - [x] Registrare la chiave NCBI gratuita — FATTO (configurata sul server in .env, limite 10 req/s)
 - [x] Agente Ricercatore — **PubMed + Europe PMC con deduplica** FATTO (pagina "Ricerca" live: conteggi per database = record identificati PRISMA, candidati unici dopo dedup). Da aggiungere: CrossRef (risoluzione DOI in fase estrazione), scoring affidabilità
 - [x] Screening v1 — pagina "Screening" live: includi/escludi con motivazione + checkpoint umano, motivi modificabili, conteggi PRISMA, log decisionale scaricabile. (AI di pre-classificazione: dopo)
-- [ ] Recuperatore full-text: cascata PMC → DOI → Unpaywall → preprint
+- [x] Recuperatore full-text v1 — pagina "Full-text" live: cascata Unpaywall → PMC per gli studi inclusi, paywall marcati "da acquistare". (preprint/cascata estesa: dopo)
 - [ ] Estrattore: dati → JSON con citazione + pagina (via Claude/Max)
 - [ ] Verificatore: gate citazione deterministico
 
