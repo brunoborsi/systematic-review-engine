@@ -48,7 +48,7 @@ Stato dell'infrastruttura:
 ## Fase 3 — Scrittura e confronto
 - [x] Collegamento Estrazione → Motore statistico — pagina "Calcolo": dati estratti+verificati, abbinamento bracci (intervento/confronto) → forest plot reale dal motore
 - [x] Redattore (AI) — pagina "Scrittura" live: bozza IMRaD dai soli numeri del motore + fonti verificate (prompt/modello editabili, download Markdown). Testato sul server.
-- [ ] Generazione documento .docx/PDF (figure, flow-chart PRISMA, GRADE)
+- [x] Generazione documento .docx — pagina "Documento": revisione IMRaD + forest plot incorporato, download Word. (flow-chart PRISMA, GRADE: dopo)
 - [ ] Benchmark multi-AI (stesso input a più modelli → griglia di punteggio)
 
 ## Fase 4 — Persistenza e orchestrazione
@@ -63,6 +63,7 @@ Stato dell'infrastruttura:
 - [ ] Raccogliere i KPI: tempo, % citazioni verificate, tasso allucinazioni, interventi umani
 
 ## Trasversale (infra)
+- [x] Accesso protetto — Caddy basic_auth davanti a tutta l'app, 2 account (sy_re_tommaso, sy_re_alessandro), password bcrypt. (login in-app con logout/per-utente: dopo, se serve)
 - [ ] Backup (dump Postgres + backup Hetzner)
 - [ ] Completare "Scopo" e "Autori" nella pagina Info
 - [ ] (Opzionale, "prodotto dopo") login multiutente
