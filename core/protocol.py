@@ -54,6 +54,7 @@ class Eligibility(BaseModel):
     languages: list[str] = Field(default_factory=lambda: ["en"])
     date_range: DateRange
     min_sample_size: int = 10
+    max_sample_size: Optional[int] = None
     inclusion_extra: list[str] = Field(default_factory=list)
     exclusion_extra: list[str] = Field(default_factory=list)
 

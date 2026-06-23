@@ -126,10 +126,30 @@ elif step == 1:
                                       d.get("study_types", ["RCT"]))
     d["languages"] = st.multiselect("Lingue", ["en", "it", "fr", "de", "es"],
                                     d.get("languages", ["en", "it"]))
-    c1, c2, c3 = st.columns(3)
-    d["date_from"] = c1.date_input("Dal", d.get("date_from", dt.date(1990, 1, 1)))
-    d["date_to"] = c2.date_input("Al", d.get("date_to", dt.date.today()))
-    d["min_n"] = c3.number_input("N° min. pazienti", min_value=0, value=int(d.get("min_n", 10)))
+
+    this_year = dt.date.today().year
+    st.markdown("**Anni di pubblicazione**")
+    c1, c2 = st.columns(2)
+    d["year_from"] = c1.number_input(
+        "Dall'anno", min_value=1950, max_value=this_year, step=1,
+        value=min(max(int(d.get("year_from", 1990)), 1950), this_year))
+    d["year_to"] = c2.number_input(
+        "All'anno", min_value=1950, max_value=this_year, step=1,
+        value=min(max(int(d.get("year_to", this_year)), 1950), this_year))
+    if d["year_from"] > d["year_to"]:
+        st.warning("⚠️ L'anno iniziale è successivo a quello finale: all'avvio verranno invertiti.")
+
+    st.markdown("**Numero di pazienti per studio** — range (0 = nessun limite)")
+    c3, c4 = st.columns(2)
+    d["min_n"] = c3.number_input(
+        "Minimo", min_value=0, step=1, value=int(d.get("min_n", 0)),
+        help="Esclude gli studi con meno pazienti di questo. 0 = nessun minimo.")
+    d["max_n"] = c4.number_input(
+        "Massimo", min_value=0, step=1, value=int(d.get("max_n", 0)),
+        help="Esclude gli studi con più pazienti di questo. 0 = nessun limite massimo.")
+    if d["max_n"] and d["max_n"] < d["min_n"]:
+        st.warning("⚠️ Il massimo è inferiore al minimo.")
+
     d["incl"] = st.text_area("Inclusioni extra (una per riga)", d.get("incl", "pazienti adulti (>=18 anni)"))
     d["excl"] = st.text_area("Esclusioni extra (una per riga)", d.get("excl", "studi su animali\ncase report"))
     nav()
@@ -208,6 +228,9 @@ else:
     def lines(text: str) -> list[str]:
         return [x.strip() for x in (text or "").splitlines() if x.strip()]
 
+    yf = int(d.get("year_from", 1990))
+    yt = int(d.get("year_to", dt.date.today().year))
+    yf, yt = min(yf, yt), max(yf, yt)
     try:
         protocol = Protocol(
             meta=Meta(protocol_id=next_protocol_id(), title=d["title"], author="Tommaso Borsi"),
@@ -221,8 +244,9 @@ else:
             eligibility=Eligibility(
                 study_types=d.get("study_types", ["RCT"]),
                 languages=d.get("languages", ["en"]),
-                date_range=DateRange(**{"from": d["date_from"], "to": d["date_to"]}),
-                min_sample_size=int(d.get("min_n", 10)),
+                date_range=DateRange(**{"from": dt.date(yf, 1, 1), "to": dt.date(yt, 12, 31)}),
+                min_sample_size=int(d.get("min_n", 0)),
+                max_sample_size=(int(d["max_n"]) if d.get("max_n") else None),
                 inclusion_extra=lines(d.get("incl", "")),
                 exclusion_extra=lines(d.get("excl", "")),
             ),
