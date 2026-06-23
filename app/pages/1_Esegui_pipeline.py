@@ -98,7 +98,7 @@ elif not res:
                           st.session_state.get("pubmed_query", q or "dexamethasone AND nerve block"))
     if st.button("1 · Esegui ricerca", type="primary"):
         st.session_state["pubmed_query"] = query
-        with st.spinner("Cerco sui database (PubMed, Europe PMC, ClinicalTrials, OpenAlex, Semantic Scholar, CrossRef)…"):
+        with st.spinner("Cerco sui database (PubMed, Europe PMC, ClinicalTrials, OpenAlex, Semantic Scholar)…"):
             st.session_state["harvest_result"] = multi_search(query, retmax=25)
         st.rerun()
 

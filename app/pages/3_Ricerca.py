@@ -12,7 +12,7 @@ st.set_page_config(page_title="Ricerca", page_icon="🔎", layout="centered")
 
 st.title("🔎 Ricerca multi-database")
 st.caption("Agente Ricercatore — interroga più database gratuiti (PubMed, Europe PMC, "
-           "ClinicalTrials.gov, OpenAlex, Semantic Scholar, CrossRef), deduplica e porta "
+           "ClinicalTrials.gov, OpenAlex, Semantic Scholar), deduplica e porta "
            "paper reali. Stadio 1 della pipeline.")
 
 DEFAULT_Q = "dexamethasone AND (perineural OR intravenous) AND nerve block"
@@ -49,8 +49,8 @@ if res:
                "I conteggi per database sono il 'record identificati' del diagramma PRISMA.")
     if res.get("unavailable"):
         st.caption("⚠️ Fonti non disponibili ora (saltate): " + ", ".join(res["unavailable"]) + ".")
-    st.caption("ℹ️ PubMed ed Europe PMC usano la query booleana esatta; OpenAlex, Semantic Scholar, "
-               "CrossRef e ClinicalTrials.gov sono motori a recall ampio (parole chiave), "
+    st.caption("ℹ️ PubMed ed Europe PMC usano la query booleana esatta; OpenAlex, Semantic Scholar "
+               "e ClinicalTrials.gov sono motori a recall ampio (parole chiave), "
                "quindi i loro conteggi sono più alti.")
     if not res["records"]:
         st.warning("Nessun risultato. Prova a modificare i termini di ricerca.")

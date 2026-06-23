@@ -237,8 +237,10 @@ def _dedup_key(rec: dict) -> str:
     return "title:" + title
 
 
-DEFAULT_SOURCES = ("pubmed", "europepmc", "clinicaltrials", "openalex",
-                   "semanticscholar", "crossref")
+# CrossRef è collegato (crossref_search) ma TENUTO FUORI dalla ricerca di default:
+# il suo conteggio è un match fuzzy su ~150M record (centinaia di migliaia di hit),
+# non un 'record identificati' PRISMA sensato. Utile semmai per la risoluzione DOI.
+DEFAULT_SOURCES = ("pubmed", "europepmc", "clinicaltrials", "openalex", "semanticscholar")
 
 _SOURCE_FUNCS = {
     "pubmed": ("PubMed", pubmed_search),
