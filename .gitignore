@@ -8,3 +8,5 @@ bin/
 protocols/*.yaml
 !protocols/.gitkeep
 .streamlit/secrets.toml
+# Blueprint Make: contiene una API key in chiaro -> mai versionare
+MAKE-CONCORSI ANESTESIA/
