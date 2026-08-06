@@ -1,5 +1,15 @@
 services:
   app:
+    healthcheck:
+      # Aggiunto il 31/07/2026. Streamlit e' servito sotto /app, quindi il suo
+      # endpoint di salute e' /app/_stcore/health (su / risponde 404).
+      test:
+        - CMD-SHELL
+        - python3 -c "import http.client,sys;c=http.client.HTTPConnection('127.0.0.1',8501,timeout=5);c.request('GET','/app/_stcore/health');r=c.getresponse();sys.exit(0 if r.status==200 else 1)"
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     build: .
     image: srev-app:latest
     container_name: srev-app
@@ -13,6 +23,7 @@ services:
       - "8501"
     environment:
       - STATS_ENGINE_URL=http://stats-engine:8000
+      - STREAMLIT_SERVER_BASE_URL_PATH=app
       - NCBI_API_KEY=${NCBI_API_KEY:-}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
       - DATABASE_URL=postgresql://srev:${POSTGRES_PASSWORD:-srev}@db:5432/srev
@@ -23,6 +34,14 @@ services:
     image: postgres:16-alpine
     container_name: srev-db
     restart: unless-stopped
+    healthcheck:
+      # Aggiunto il 31/07/2026: era l'unico degli 8 database senza healthcheck,
+      # quindi un blocco senza morte sarebbe rimasto "Up" e invisibile.
+      test: ["CMD-SHELL", "pg_isready -U srev -d srev"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
     networks:
       - internal
     environment:
@@ -33,6 +52,15 @@ services:
       - db-data:/var/lib/postgresql/data
 
   stats-engine:
+    healthcheck:
+      # Aggiunto il 31/07/2026. uvicorn risponde sulla 8000
+      test:
+        - CMD-SHELL
+        - python3 -c "import http.client,sys;c=http.client.HTTPConnection('127.0.0.1',8000,timeout=5);c.request('GET','/');r=c.getresponse();sys.exit(0 if r.status<500 else 1)"
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     build: ./stats_engine
     image: srev-stats:latest
     container_name: srev-stats
